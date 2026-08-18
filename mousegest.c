@@ -302,6 +302,11 @@ static int try_grab_node(const char *path, int *out_fd, struct libevdev **out_de
         !libevdev_has_event_code(dev, EV_KEY, BTN_LEFT)) {
         libevdev_free(dev); close(fd); return -ENODEV;
     }
+    /* Combo receivers expose one node with both a pointer and a full keyboard.
+     * Grabbing that would swallow typing, so skip anything that can type. */
+    if (libevdev_has_event_code(dev, EV_KEY, KEY_A)) {
+        libevdev_free(dev); close(fd); return -ENODEV;
+    }
     if (libevdev_grab(dev, LIBEVDEV_GRAB) < 0) {
         libevdev_free(dev); close(fd); return -EBUSY;
     }
@@ -309,8 +314,9 @@ static int try_grab_node(const char *path, int *out_fd, struct libevdev **out_de
     return 0;
 }
 
-/* Scan /sys/class/input for nodes whose name contains `match`; grab the first
- * grabbable pointer (a node already grabbed by interception is skipped). */
+/* Scan /sys/class/input and grab the first grabbable pointer. With `match`,
+ * only nodes whose name contains that substring are considered; with NULL, any
+ * pointer will do (a node already grabbed by interception is skipped). */
 static int open_by_match(const char *match, int *out_fd, struct libevdev **out_dev)
 {
     for (int i = 0; i < 256; i++) {
@@ -321,7 +327,7 @@ static int open_by_match(const char *match, int *out_fd, struct libevdev **out_d
         if (!fgets(nbuf, sizeof(nbuf), f)) { fclose(f); continue; }
         fclose(f);
         nbuf[strcspn(nbuf, "\n")] = 0;
-        if (!strstr(nbuf, match)) continue;
+        if (match && !strstr(nbuf, match)) continue;
 
         snprintf(devp, sizeof(devp), "/dev/input/event%d", i);
         int rc = try_grab_node(devp, out_fd, out_dev);
@@ -527,7 +533,10 @@ int main(int argc, char **argv)
     nanosleep(&ts, NULL);
 
     int ret;
-    if (grab_path || match)
+    /* Interception Tools pipes us stdin/stdout, so a non-tty stdin means plugin
+     * mode. Run interactively (or from exec-once) and we pick a mouse ourselves;
+     * --match narrows the scan, --grab skips it entirely. */
+    if (grab_path || match || isatty(STDIN_FILENO))
         ret = run_grab(&st, grab_path, match);
     else
         ret = run_plugin(&st);

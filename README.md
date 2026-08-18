@@ -28,42 +28,77 @@ Click swallowing: a button press is held back for a short window (`--window`,
 default 35 ms). If the other button arrives in time → it's a gesture chord, both
 presses are discarded. Otherwise the press is flushed as a normal click/hold.
 
-## Build & install
+## Install
+
+One command (clones, builds, installs, sets up `/dev/uinput` and group access):
+
+```sh
+bash <(curl -fsSL https://raw.githubusercontent.com/Petyok/mousegest/main/install.sh)
+```
+
+Pass `--dry-run` to see every step without executing it.
+
+Arch:
+
+```sh
+makepkg -si            # PKGBUILD is in the repo
+```
+
+By hand:
 
 ```sh
 make
-sudo make install        # -> /usr/local/bin/mousegest
+sudo make install      # -> /usr/local/bin/mousegest
+sudo usermod -aG input "$USER"   # to read the mouse node; log out and back in
+sudo modprobe uinput             # and see the udev rule in install.sh
 ```
 
-## Run
+## Usage
 
 ```sh
-mousegest --match "GAMING MOUSE" --sens 4
+mousegest --sens 4
 ```
 
-Autostarted via `~/.config/hypr/hyprland.conf`:
+With no flags it grabs the first mouse it can. If that picks the wrong pointer,
+narrow the scan by name or pin the node:
+
+```sh
+mousegest --match "Logitech" --sens 4
+mousegest --grab /dev/input/event5 --sens 4
+```
+
+Device names come from `cat /proc/bus/input/devices`.
+
+Autostart from `~/.config/hypr/hyprland.conf`:
 
 ```
-exec-once = /usr/local/bin/mousegest --match "GAMING MOUSE" --sens 4
+exec-once = /usr/local/bin/mousegest --sens 4
 ```
 
 ## Options
 
-- `--sens F`      mouse-unit → touchpad-unit gain. **4** feels best here. Negative
-                  flips swipe direction.
+- `--sens F`      mouse-unit → touchpad-unit gain (default 1.0). **4** feels good
+                  on a 1000 Hz gaming mouse. Negative flips swipe direction.
 - `--window MS`   chord-detect / click-swallow window (default 35).
 - `--mod-key C`   evdev keycode that means mainMod (default 125 = KEY_LEFTMETA).
-                  Note that XKB remaps such as `ctrl:swap_lwin_lctl` do not change
-                  this: evdev sees the raw keycode, so 125 stays correct.
-- `--move-step F` mouse units per workspace in move-window mode (default 250).
+                  XKB remaps such as `ctrl:swap_lwin_lctl` do not change this:
+                  evdev sees the raw keycode, so 125 stays correct.
+- `--move-step F` mouse units per workspace in move-window mode (default 1500).
+- `--move-min MS` minimum gap between workspace jumps, debounce (default 120).
 - `--move-invert` flip move-window direction.
-- `--match NAME`  auto-pick the first **grabbable** mouse whose name contains NAME.
-                  Interception Tools grabs the physical node first, so `--match`
-                  cleanly lands on its virtual passthrough output; if interception
-                  isn't running it grabs the physical mouse directly.
-- `--grab /dev/input/eventN`  grab a specific node instead of `--match`.
-- (no flag)       Interception Tools plugin mode (stdin→stdout):
-                  `intercept -g $DEVNODE | mousegest | uinput -d $DEVNODE`.
+- `--match NAME`  restrict the scan to devices whose name contains NAME.
+- `--grab /dev/input/eventN`  grab exactly this node, no scanning.
+
+Nodes already grabbed by someone else are skipped, so with Interception Tools
+running, `--match` lands on its virtual passthrough output rather than fighting
+it for the physical node.
+
+If stdin is not a terminal, mousegest runs as an Interception Tools plugin
+instead (stdin → stdout):
+
+```sh
+intercept -g $DEVNODE | mousegest | uinput -d $DEVNODE
+```
 
 ## Requirements
 
