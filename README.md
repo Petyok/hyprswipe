@@ -1,5 +1,16 @@
 # mousegest
 
+**Touchpad-style workspace swipes, on a mouse**
+
+[![vibecoded](https://img.shields.io/badge/vibecoded-100%25-ff69b4)](#model-credits)
+[![release](https://img.shields.io/github/v/release/Petyok/mousegest)](https://github.com/Petyok/mousegest/releases)
+[![license](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
+
+> ⚠️ This project is 100% vibe-coded slop — see [Model credits](#model-credits)
+> for who to blame; not a single line was written by a human. It has — and will
+> keep having — stupid bugs LLMs can't see. The kernel drops the grab when the
+> process dies, so your mouse always comes back; use at your own risk.
+
 Two mouse gestures for Hyprland:
 
 - Hold **LMB+RMB** and drag horizontally → workspaces swipe 1:1, exactly like a
@@ -134,6 +145,14 @@ both found by trial:
 which makes it robust against event-node renumbering across reboots and against
 Interception Tools holding the physical node (mousegest then lands on its virtual
 passthrough output).
+
+## Model credits
+
+Built end-to-end by Claude models in sessions with a human — the design, the C,
+the libinput reverse-engineering above, this README and the packaging. Not a
+single line was typed by a person.
+
+The human contributed the idea, the hardware, the testing, and the swearing.
 
 ## License
 
