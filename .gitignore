@@ -1,0 +1,7 @@
+# build artefacts
+mousegest
+test_swipe
+*.o
+
+# local agent/editor state
+.claude/
