@@ -14,8 +14,8 @@ optdepends=(
 )
 install=hyprswipe.install
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
-# Replaced by `updpkgsums` at release time.
-sha256sums=('SKIP')
+# sha256 of the v0.1.0 release tarball; refresh with `updpkgsums` on release.
+sha256sums=('1801f57e28787f0e13dc9941440e60870743c15310c581dc82ecae3ff0e833da')
 
 build() {
   make -C "$pkgname-$pkgver"
