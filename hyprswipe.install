@@ -1,13 +1,13 @@
 post_install() {
   cat <<'MSG'
-==> mousegest needs to read your mouse's evdev node, which on most systems means
+==> hyprswipe needs to read your mouse's evdev node, which on most systems means
     being in the `input` group:
 
         sudo usermod -aG input "$USER"    # then log out and back in
 
 ==> Autostart from ~/.config/hypr/hyprland.conf:
 
-        exec-once = /usr/bin/mousegest --sens 4
+        exec-once = /usr/bin/hyprswipe --sens 4
 
     With no flags it grabs the first mouse it can. Use --match NAME or
     --grab /dev/input/eventN if that picks the wrong pointer.

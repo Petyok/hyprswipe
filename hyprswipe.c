@@ -1,5 +1,5 @@
 /*
- * mousegest -- hold LMB+RMB and drag horizontally to swipe Hyprland workspaces,
+ * hyprswipe -- hold LMB+RMB and drag horizontally to swipe Hyprland workspaces,
  * 1:1 with the touchpad's `gesture = 3, horizontal, workspace`.
  *
  * It reads the gaming mouse's evdev stream, passes everything through unchanged,
@@ -10,7 +10,7 @@
  * Two modes:
  *   (default) interception plugin:  reads input_event from stdin, writes to
  *       stdout. Drop into an Interception Tools pipe:
- *           intercept -g $DEVNODE | mousegest | uinput -d $DEVNODE
+ *           intercept -g $DEVNODE | hyprswipe | uinput -d $DEVNODE
  *   --grab /dev/input/eventN:  grabs the device itself and re-emits a clone via
  *       uinput (standalone, for testing without udevmon).
  *
@@ -332,10 +332,10 @@ static int open_by_match(const char *match, int *out_fd, struct libevdev **out_d
         snprintf(devp, sizeof(devp), "/dev/input/event%d", i);
         int rc = try_grab_node(devp, out_fd, out_dev);
         if (rc == 0) {
-            fprintf(stderr, "mousegest: grabbed %s (%s)\n", devp, nbuf);
+            fprintf(stderr, "hyprswipe: grabbed %s (%s)\n", devp, nbuf);
             return 0;
         }
-        fprintf(stderr, "mousegest: skip %s (%s): %s\n", devp, nbuf,
+        fprintf(stderr, "hyprswipe: skip %s (%s): %s\n", devp, nbuf,
                 rc == -EBUSY ? "already grabbed" : strerror(-rc));
     }
     return -ENODEV;
@@ -461,7 +461,7 @@ static int run_grab(struct state *st, const char *path, const char *match)
             continue;
         }
 
-        fprintf(stderr, "mousegest: connected, gesture active\n");
+        fprintf(stderr, "hyprswipe: connected, gesture active\n");
         int lost = session_loop(st, fd, dev);
 
         /* tear down this session's mouse resources */
@@ -475,7 +475,7 @@ static int run_grab(struct state *st, const char *path, const char *match)
         close(fd);
 
         if (lost && !g_stop)
-            fprintf(stderr, "mousegest: device lost, reconnecting...\n");
+            fprintf(stderr, "hyprswipe: device lost, reconnecting...\n");
     }
     return 0;
 }

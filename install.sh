@@ -1,15 +1,15 @@
 #!/usr/bin/env bash
-# mousegest installer: deps, build, /dev/uinput + /dev/input access, Hyprland hint.
+# hyprswipe installer: deps, build, /dev/uinput + /dev/input access, Hyprland hint.
 # Idempotent. Usage: ./install.sh [--dry-run]
 #
 # One-liner (clones itself into a temp dir first):
-#   bash <(curl -fsSL https://raw.githubusercontent.com/Petyok/mousegest/main/install.sh)
+#   bash <(curl -fsSL https://raw.githubusercontent.com/Petyok/hyprswipe/main/install.sh)
 set -euo pipefail
 
-REPO_URL=https://github.com/Petyok/mousegest.git
+REPO_URL=https://github.com/Petyok/hyprswipe.git
 USER_NAME=${USER:-$(id -un)}
-UDEV_RULE=/etc/udev/rules.d/99-mousegest-uinput.rules
-MODULE_CONF=/etc/modules-load.d/mousegest-uinput.conf
+UDEV_RULE=/etc/udev/rules.d/99-hyprswipe-uinput.rules
+MODULE_CONF=/etc/modules-load.d/hyprswipe-uinput.conf
 
 DRY_RUN=0
 case "${1:-}" in
@@ -29,7 +29,7 @@ run() {
 step "1. Locate sources"
 # Piped from curl there is no repo around us, so fetch one.
 SELF_DIR=$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" 2>/dev/null && pwd || echo /nonexistent)
-if [ -f "$SELF_DIR/mousegest.c" ]; then
+if [ -f "$SELF_DIR/hyprswipe.c" ]; then
   REPO=$SELF_DIR
   say "building from $REPO"
 else
@@ -65,7 +65,7 @@ step "3. Build"
 run make -C "$REPO"
 
 step "4. Install binary"
-run sudo make -C "$REPO" install       # -> /usr/local/bin/mousegest
+run sudo make -C "$REPO" install       # -> /usr/local/bin/hyprswipe
 
 step "5. /dev/uinput access"
 # The virtual touchpad is created through uinput, so the module must be loaded
@@ -98,17 +98,17 @@ step "Done"
 cat <<'HINT'
 Try it now (Ctrl-C to stop):
 
-    mousegest --sens 4
+    hyprswipe --sens 4
 
 Then autostart it from ~/.config/hypr/hyprland.conf:
 
-    exec-once = /usr/local/bin/mousegest --sens 4
+    exec-once = /usr/local/bin/hyprswipe --sens 4
 
-With no flags mousegest picks the first mouse it can grab. If you have several
+With no flags hyprswipe picks the first mouse it can grab. If you have several
 pointers and it takes the wrong one, narrow the scan:
 
-    mousegest --match "Logitech" --sens 4    # substring of the device name
-    mousegest --grab /dev/input/event5       # or pin the node outright
+    hyprswipe --match "Logitech" --sens 4    # substring of the device name
+    hyprswipe --grab /dev/input/event5       # or pin the node outright
 
 Device names come from:  cat /proc/bus/input/devices
 HINT

@@ -1,10 +1,10 @@
 # Maintainer: Petr Netupskii <petruha@users.noreply.github.com>
-pkgname=mousegest
+pkgname=hyprswipe
 pkgver=0.1.0
 pkgrel=1
 pkgdesc="LMB+RMB mouse gestures for Hyprland via a synthetic 3-finger touchpad swipe"
 arch=(x86_64 aarch64)
-url="https://github.com/Petyok/mousegest"
+url="https://github.com/Petyok/hyprswipe"
 license=('AGPL-3.0-only')
 depends=(libevdev)
 makedepends=(pkgconf)
@@ -12,7 +12,7 @@ optdepends=(
   'hyprland: the compositor whose workspace gesture this drives'
   'interception-tools: run as a udevmon plugin instead of grabbing the node directly'
 )
-install=mousegest.install
+install=hyprswipe.install
 source=("$pkgname-$pkgver.tar.gz::$url/archive/refs/tags/v$pkgver.tar.gz")
 # Replaced by `updpkgsums` at release time.
 sha256sums=('SKIP')
@@ -23,7 +23,7 @@ build() {
 
 package() {
   cd "$pkgname-$pkgver"
-  install -Dm755 mousegest "$pkgdir/usr/bin/mousegest"
+  install -Dm755 hyprswipe "$pkgdir/usr/bin/hyprswipe"
   install -Dm644 LICENSE  "$pkgdir/usr/share/licenses/$pkgname/LICENSE"
   install -Dm644 README.md "$pkgdir/usr/share/doc/$pkgname/README.md"
   # The virtual touchpad goes through uinput, so ship the module load and the

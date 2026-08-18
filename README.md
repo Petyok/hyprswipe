@@ -1,9 +1,9 @@
-# mousegest
+# hyprswipe
 
 **Touchpad-style workspace swipes, on a mouse**
 
 [![vibecoded](https://img.shields.io/badge/vibecoded-100%25-ff69b4)](#model-credits)
-[![release](https://img.shields.io/github/v/release/Petyok/mousegest)](https://github.com/Petyok/mousegest/releases)
+[![release](https://img.shields.io/github/v/release/Petyok/hyprswipe)](https://github.com/Petyok/hyprswipe/releases)
 [![license](https://img.shields.io/badge/license-AGPL--3.0-blue)](LICENSE)
 
 > ⚠️ This project is 100% vibe-coded slop — see [Model credits](#model-credits)
@@ -44,7 +44,7 @@ presses are discarded. Otherwise the press is flushed as a normal click/hold.
 One command (clones, builds, installs, sets up `/dev/uinput` and group access):
 
 ```sh
-bash <(curl -fsSL https://raw.githubusercontent.com/Petyok/mousegest/main/install.sh)
+bash <(curl -fsSL https://raw.githubusercontent.com/Petyok/hyprswipe/main/install.sh)
 ```
 
 Pass `--dry-run` to see every step without executing it.
@@ -59,7 +59,7 @@ By hand:
 
 ```sh
 make
-sudo make install      # -> /usr/local/bin/mousegest
+sudo make install      # -> /usr/local/bin/hyprswipe
 sudo usermod -aG input "$USER"   # to read the mouse node; log out and back in
 sudo modprobe uinput             # and see the udev rule in install.sh
 ```
@@ -67,15 +67,15 @@ sudo modprobe uinput             # and see the udev rule in install.sh
 ## Usage
 
 ```sh
-mousegest --sens 4
+hyprswipe --sens 4
 ```
 
 With no flags it grabs the first mouse it can. If that picks the wrong pointer,
 narrow the scan by name or pin the node:
 
 ```sh
-mousegest --match "Logitech" --sens 4
-mousegest --grab /dev/input/event5 --sens 4
+hyprswipe --match "Logitech" --sens 4
+hyprswipe --grab /dev/input/event5 --sens 4
 ```
 
 Device names come from `cat /proc/bus/input/devices`.
@@ -83,7 +83,7 @@ Device names come from `cat /proc/bus/input/devices`.
 Autostart from `~/.config/hypr/hyprland.conf`:
 
 ```
-exec-once = /usr/local/bin/mousegest --sens 4
+exec-once = /usr/local/bin/hyprswipe --sens 4
 ```
 
 ## Options
@@ -104,11 +104,11 @@ Nodes already grabbed by someone else are skipped, so with Interception Tools
 running, `--match` lands on its virtual passthrough output rather than fighting
 it for the physical node.
 
-If stdin is not a terminal, mousegest runs as an Interception Tools plugin
+If stdin is not a terminal, hyprswipe runs as an Interception Tools plugin
 instead (stdin → stdout):
 
 ```sh
-intercept -g $DEVNODE | mousegest | uinput -d $DEVNODE
+intercept -g $DEVNODE | hyprswipe | uinput -d $DEVNODE
 ```
 
 ## Requirements
@@ -143,7 +143,7 @@ both found by trial:
 
 `--match` iterates the event nodes and takes the first one it can actually grab,
 which makes it robust against event-node renumbering across reboots and against
-Interception Tools holding the physical node (mousegest then lands on its virtual
+Interception Tools holding the physical node (hyprswipe then lands on its virtual
 passthrough output).
 
 ## Model credits

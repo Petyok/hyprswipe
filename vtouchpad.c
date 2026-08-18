@@ -53,7 +53,7 @@ int vtouchpad_create(struct vtouchpad *tp)
     struct libevdev *dev = libevdev_new();
     if (!dev) return -ENOMEM;
 
-    libevdev_set_name(dev, "mouse_gest virtual touchpad");
+    libevdev_set_name(dev, "hyprswipe virtual touchpad");
     libevdev_set_id_bustype(dev, BUS_USB);
     libevdev_set_id_vendor(dev, 0x1d6b);   /* neutral, avoid Apple quirks */
     libevdev_set_id_product(dev, 0x0abc);
